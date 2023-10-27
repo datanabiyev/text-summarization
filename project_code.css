@@ -1,0 +1,70 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
+#include <unordered_map>
+
+// Function to tokenize a text into words
+std::vector<std::string> tokenizeText(const std::string& text) {
+    std::vector<std::string> tokens;
+    stdistringstream iss(text);
+    copy(istream_iterator<string>(iss),
+         istream_iterator<string>(),
+         back_inserter(tokens));
+    return tokens;
+}
+
+// Function to extract keywords (main points) from a text
+std::vector<std::string> extractKeywords(const std::string& text, int numKeywords) {
+    // Tokenize the text into words
+    std::vector<std::string> tokens = tokenizeText(text);
+
+    // Create a frequency map for words
+    std::unordered_map<std::string, int> wordFrequency;
+    for (const std::string& word : tokens) {
+        // Convert to lowercase to ensure case-insensitive matching
+        std::string lowercaseWord = word;
+        std::transform(lowercaseWord.begin(), lowercaseWord.end(), lowercaseWord.begin(), ::tolower);
+
+        // Increment the word frequency count
+        wordFrequency[lowercaseWord]++;
+    }
+
+    // Sort words by frequency in descending order
+    std::vector<std::pair<std::string, int>> sortedWords;
+    for (const auto& entry : wordFrequency) {
+        sortedWords.push_back(entry);
+    }
+    std::sort(sortedWords.begin(), sortedWords.end(), [](const auto& a, const auto& b) {
+        return a.second > b.second;
+    });
+
+    // Extract the top keywords (main points)
+    std::vector<std::string> keywords;
+    for (int i = 0; i < std::min(numKeywords, static_cast<int>(sortedWords.size())); i++) {
+        keywords.push_back(sortedWords[i].first);
+    }
+
+    return keywords;
+}
+
+int main() {
+    // Example text
+    std::string text = "This is an example text. It contains some keywords. Keywords are important for understanding the main points.";
+
+    // Number of keywords (main points) to extract
+    int numKeywords = 3;
+
+    // Extract keywords
+    std::vector<std::string> keywords = extractKeywords(text, numKeywords);
+
+    // Print the main points (keywords)
+    std::cout << "Main Points (Keywords):" << std::endl;
+    for (const std::string& keyword : keywords) {
+        std::cout << keyword << std::endl;
+    }
+
+    return 0;
+}
